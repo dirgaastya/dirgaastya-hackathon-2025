@@ -37,4 +37,17 @@ class TransactionController extends Controller
             'message' => 'Successfully Obtained Summary Category'
         ]);
     }
+    public function getSummaryOutcomePerMonth(Request $request)
+    {
+        $year =  $request['year'] ?? Carbon::now()->year;
+        $transaction = Transaction::selectRaw('sum(amount) as total')
+            ->whereRaw("EXTRACT(YEAR from transactions.transaction_date) = {$year}")
+            ->groupByRaw('EXTRACT(MONTH from transactions.transaction_date)')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'data' => $transaction,
+            'message' => 'Successfully Obtained Summary Category'
+        ]);
+    }
 }

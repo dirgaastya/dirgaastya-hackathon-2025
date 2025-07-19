@@ -58,6 +58,13 @@ export interface ISummaryCategoryResponse {
         total : number,
     }[]
 }
+export interface ISummaryOutcomePerMonthResponse {
+    status : boolean,
+    message: string,
+    data : {
+        total : number,
+    }[]
+}
 
 export interface IPaginationLink {
     "url": string | null,

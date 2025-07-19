@@ -1,29 +1,17 @@
 <script setup lang="ts">
 import TransactionTable from '@/components/Table/TransactionTable.vue';
 import CategoryChart from '@/components/Graphic/CategoryChart.vue';
-import { ICategoryData, type IResponseCategory, type ISummaryCategoryResponse, type ISummaryTitle, type ITransactionResponse, type ITransactionResponseData } from '@/utils/types/type';
+import {  type ISummaryCategoryResponse, type ISummaryOutcomePerMonthResponse, type ITransactionResponse, type ITransactionResponseData } from '@/utils/types/type';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import OutcomePerMonthChart from '@/components/Graphic/OutcomePerMonthChart.vue';
 
-
-
-const summaryChart= [
-    {
-        title: "Outcome by Category",
-    },
-    {
-        title: "Top 10 Outcome Expenses"
-    },
-    {
-        title: "Top 10 Outcome Expenses"
-    }
-]
 
 const listTransaction= ref<ITransactionResponseData >({} as ITransactionResponseData)
-const categories = ref<ICategoryData[]>([])
 const labelsCategory = ref<string[]>([])
 const totalCategory = ref<number[]>([])
-
+const outcomePerMonth = ref<number[]>([])
+const year = new Date().getFullYear()
 const fetchTransactionData = async (page = '') => {
     const param = `?page=${page}`
     const response = axios.post<ITransactionResponse>(`${import.meta.env.VITE_API_HOST}/transaction/get-transactions${param}`,{
@@ -32,13 +20,6 @@ const fetchTransactionData = async (page = '') => {
     listTransaction.value = (await response).data.data;
 }
 
-// const fetchCategories = async () => {
-//     const response = axios.get<IResponseCategory>(`${import.meta.env.VITE_API_HOST}/category/get-all-categories`)
-//     categories.value = (await response).data.data
-//     categories.value.map(category=>{
-//         labelsCategory.value.push(category.name)
-//     })
-// }
 
 const fetchSummaryCategory = async () => {
     const response = axios.post<ISummaryCategoryResponse>(`${import.meta.env.VITE_API_HOST}/transaction/get-summary-category`);
@@ -47,6 +28,13 @@ const fetchSummaryCategory = async () => {
          labelsCategory.value.push(item.categoryname)
          totalCategory.value.push(item.total)
     })
+}
+const fetchSummaryOutcomePerMonth = async () => {
+    const response = axios.post<ISummaryOutcomePerMonthResponse>(`${import.meta.env.VITE_API_HOST}/transaction/get-summary-outcome`);
+    (await response).data.data.map(item=>{
+        outcomePerMonth.value.push(item.total)
+    })
+
 }
 
 
@@ -60,6 +48,7 @@ const handlePage = (value : string) => {
 onMounted(async ()=>{
     await fetchTransactionData();
     await fetchSummaryCategory();
+    await fetchSummaryOutcomePerMonth();
 })
 </script>
 
@@ -69,10 +58,16 @@ onMounted(async ()=>{
     <div class="w-full">
         <h3 class="text-3xl text-gray-800 font-semibold mb-6">Summary Chart</h3>
         <div class="grid grid-cols-3 gap-x-6 gap-y-3 ">
-            <div v-for="(summary, index) in summaryChart" :key="index" class="w-full h-full py-2 px-3 rounded shadow bg-white">
+            <div class="w-full h-full py-2 px-3 rounded shadow bg-white">
                 <div class="border-b border-gray-100 pb-2">
-                    <p class="font-semibold">{{ summary.title }}</p>
+                    <p class="font-semibold">Outcome by Category</p>
                     <CategoryChart v-if="labelsCategory.length > 0" :labels="labelsCategory" :data="totalCategory"/>
+                </div>
+            </div>
+            <div class="w-full h-full col-span-2 py-2 px-3 rounded shadow bg-white">
+                <div class="border-b border-gray-100 pb-2">
+                    <p class="font-semibold">Outcome per month {{ year }}</p>
+                    <OutcomePerMonthChart  v-if="outcomePerMonth.length > 0" :data="outcomePerMonth"/>
                 </div>
             </div>
         </div>

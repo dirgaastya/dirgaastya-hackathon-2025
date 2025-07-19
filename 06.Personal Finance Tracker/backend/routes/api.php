@@ -22,4 +22,5 @@ Route::prefix('category')->group(function () {
 Route::prefix('transaction')->group(function () {
     Route::post('get-transactions', [TransactionController::class, 'getTransactions']);
     Route::post('get-summary-category', [TransactionController::class, 'getSummaryCategory']);
+    Route::post('get-summary-outcome', [TransactionController::class, 'getSummaryOutcomePerMonth']);
 });
