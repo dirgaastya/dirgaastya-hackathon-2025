@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -23,10 +24,12 @@ class TransactionController extends Controller
 
     public function getSummaryCategory(Request $request)
     {
+        $month = $request['month'] ?? Carbon::now()->month;
+        $year =  $request['year'] ?? Carbon::now()->year;
         $transactionsByCategory = Transaction::join('categories', 'categories.id', 'transactions.category_id')
             ->selectRaw('categories.name as categoryName, sum(amount) as total')
-            ->whereRaw("EXTRACT(MONTH from transactions.transaction_date) = {$request['month']}")
-            ->whereRaw("EXTRACT(YEAR from transactions.transaction_date) = {$request['year']}")
+            ->whereRaw("EXTRACT(MONTH from transactions.transaction_date) = {$month}")
+            ->whereRaw("EXTRACT(YEAR from transactions.transaction_date) = {$year}")
             ->groupBy('category_id', 'categories.name')->get();
         return response()->json([
             'status' => true,

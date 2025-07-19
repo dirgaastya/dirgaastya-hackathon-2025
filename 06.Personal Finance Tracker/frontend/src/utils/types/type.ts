@@ -50,6 +50,14 @@ export interface IResponseCategory {
     message: string,
     data : ICategoryData[]
 }
+export interface ISummaryCategoryResponse {
+    status : boolean,
+    message: string,
+    data : {
+        categoryname : string,
+        total : number,
+    }[]
+}
 
 export interface IPaginationLink {
     "url": string | null,
