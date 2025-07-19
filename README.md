@@ -1,4 +1,5 @@
 # 06. Personal Finance Tracker
+
     1. Stack : Laravel 10 + Vue
     2. Fitur :
         - UI Summary Chart Category per bulan & Outcome per bulan
@@ -16,11 +17,13 @@
             2. Npm run dev
     4. Import Transcation WEB UI
 
-
 # 03. Postgres Query Optimizer
+
     1. Persiapan data -> Dataset Salaries Data Science, ML & AI Job Sebanyak 10 Juta Data (Terdapat pada file salaries.csv)
+    LINK : https://drive.google.com/drive/folders/199O41-t5ETmDxCncVdEpsiwfAaB8CyEQ?usp=drive_link
     2. Tujuan dari Query Mencari Rata Rata Gaji berdasarkan tahun kerja, level dan tipe pekerja. Sebelum Optimasi didapatkan waktu sekitar 03.116 detik
-``` sql
+
+```sql
     SELECT job_title, AVG(salary) FROM salaries
     WHERE work_year between 2023 AND 2024
     AND experience_level IN ('EN', 'MI')
@@ -28,6 +31,7 @@
     GROUP BY job_title
     ORDER BY AVG(salary) desc
 ```
+
     3. Langkah Optimasi yang saya lakukan ialah membuat materiliazed view agar datanya tersimpan sehingga tidak perlu menjalankan query berulang ulang.
 
 ```sql
@@ -40,7 +44,7 @@
 
 4. Setelah itu Jalankan querynya kembali
 
-``` sql
+```sql
 SELECT * FROM average_salaries
 WHERE work_year between 2022 AND 2024
 AND experience_level IN ('EN', 'MI')
