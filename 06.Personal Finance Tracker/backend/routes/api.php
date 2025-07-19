@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-    Route::prefix('category')->group(function () {
-        Route::get('get-all-categories',[CategoriesController::class,'getAllCategories']);
-    });
-    Route::prefix('transaction')->group(function () {
-        Route::post('get-transactions',[TransactionController::class,'getTransactions']);
-    });
+Route::prefix('category')->group(function () {
+    Route::get('get-all-categories', [CategoriesController::class, 'getAllCategories']);
+});
+Route::prefix('transaction')->group(function () {
+    Route::post('import-transactions', [TransactionController::class, 'importTransaction']);
+    Route::post('get-transactions', [TransactionController::class, 'getTransactions']);
+    Route::post('get-summary-category', [TransactionController::class, 'getSummaryCategory']);
+    Route::post('get-summary-outcome', [TransactionController::class, 'getSummaryOutcomePerMonth']);
+});
