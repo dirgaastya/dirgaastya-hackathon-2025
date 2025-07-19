@@ -10,14 +10,28 @@ class TransactionController extends Controller
     public function getTransactions(Request $request)
     {
         $transactions = Transaction::with('category')
-                        ->when($request['category_id'],function($query) use($request){
-                            $query->where('category_id', $request['category_id']);
-                        })
-                        ->paginate();
-           return response()->json([
+            ->when($request['category_id'], function ($query) use ($request) {
+                $query->where('category_id', $request['category_id']);
+            })
+            ->paginate();
+        return response()->json([
             'status' => true,
-            'data'=> $transactions,
-            'message' => 'Successfully Obtained Category Data'
+            'data' => $transactions,
+            'message' => 'Successfully Obtained Transaction Data'
+        ]);
+    }
+
+    public function getSummaryCategory(Request $request)
+    {
+        $transactionsByCategory = Transaction::join('categories', 'categories.id', 'transactions.category_id')
+            ->selectRaw('categories.name as categoryName, sum(amount) as total')
+            ->whereRaw("EXTRACT(MONTH from transactions.transaction_date) = {$request['month']}")
+            ->whereRaw("EXTRACT(YEAR from transactions.transaction_date) = {$request['year']}")
+            ->groupBy('category_id', 'categories.name')->get();
+        return response()->json([
+            'status' => true,
+            'data' => $transactionsByCategory,
+            'message' => 'Successfully Obtained Summary Category'
         ]);
     }
 }
