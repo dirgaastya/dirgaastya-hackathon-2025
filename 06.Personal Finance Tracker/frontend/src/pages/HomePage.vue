@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import TransactionTable from '@/components/Table/TransactionTable.vue';
-import type { ISummaryTitle, ITransactionResponse, ITransactionResponseData } from '@/utils/types/type';
+import CategoryChart from '@/components/Graphic/CategoryChart.vue';
+import { ICategoryData, type IResponseCategory, type ISummaryTitle, type ITransactionResponse, type ITransactionResponseData } from '@/utils/types/type';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
 
-const summaryChart: ISummaryTitle[] = [
+
+const summaryChart= [
     {
-        title: "Outcome by Category"
+        title: "Outcome by Category",
     },
     {
         title: "Top 10 Outcome Expenses"
@@ -18,6 +20,8 @@ const summaryChart: ISummaryTitle[] = [
 ]
 
 const listTransaction= ref<ITransactionResponseData >({} as ITransactionResponseData)
+const categories = ref<ICategoryData[]>([])
+const labels = ref<string[]>([])
 
 const fetchTransactionData = async (page = '') => {
     const param = `?page=${page}`
@@ -25,6 +29,14 @@ const fetchTransactionData = async (page = '') => {
         category_id : ''
     })
     listTransaction.value = (await response).data.data;
+}
+
+const fetchCategories = async () => {
+    const response = axios.get<IResponseCategory>(`${import.meta.env.VITE_API_HOST}/category/get-all-categories`)
+    categories.value = (await response).data.data
+    categories.value.map(category=>{
+        labels.value.push(category.name)
+    })
 }
 
 const handlePage = (value : string) => {
@@ -35,18 +47,20 @@ const handlePage = (value : string) => {
 
 onMounted(async ()=>{
     await fetchTransactionData();
+    await fetchCategories();
 })
 </script>
 
 <template>
-  <div class="w-full min-h-screen  flex flex-col gap-6 bg-gray-50  px-6 py-3 overflow-hidden ">
+  <div class="w-full min-h-screen  flex flex-col gap-12 bg-gray-50  px-6 py-3 overflow-hidden ">
 
     <div class="w-full">
         <h3 class="text-3xl text-gray-800 font-semibold mb-6">Summary Chart</h3>
-        <div class="grid grid-cols-3 gap-x-6 gap-y-3 h-64">
+        <div class="grid grid-cols-3 gap-x-6 gap-y-3 ">
             <div v-for="(summary, index) in summaryChart" :key="index" class="w-full h-full py-2 px-3 rounded shadow bg-white">
                 <div class="border-b border-gray-100 pb-2">
                     <p class="font-semibold">{{ summary.title }}</p>
+                    <CategoryChart v-if="labels.length > 0" :labels="labels"/>
                 </div>
             </div>
         </div>

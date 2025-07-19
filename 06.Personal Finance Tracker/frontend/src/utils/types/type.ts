@@ -45,6 +45,12 @@ export interface ICategoryData {
     "updated_at": string
 }
 
+export interface IResponseCategory {
+    status : boolean,
+    message: string,
+    data : ICategoryData[]
+}
+
 export interface IPaginationLink {
     "url": string | null,
     "label": string,
