@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\TransactionImport;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -49,5 +52,28 @@ class TransactionController extends Controller
             'data' => $transaction,
             'message' => 'Successfully Obtained Summary Category'
         ]);
+    }
+
+    public function importTransaction(Request $request)
+    {
+        dd($request);
+        try {
+            DB::beginTransaction();
+            $file = $request->file('file');
+            Excel::import(new TransactionImport, $file);
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'data' => '',
+                'message' => 'Successfully Import Data'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'data' => '',
+                'message' => 'Import Data Failed' . $e->getMessage()
+            ], 400);
+        }
     }
 }
