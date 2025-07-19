@@ -1,9 +1,7 @@
-<script setup lang="ts">
-import { Button } from '@/components/ui/button'
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div>
-    <Button>Click me</Button>
-  </div>
+     <RouterView />
 </template>
+
+<style scoped></style>
